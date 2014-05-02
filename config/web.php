@@ -33,8 +33,17 @@ $config = [
             ],
         ],
         'db' => $db,
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            // 'enableStrictParsing' => true,
+            // 'showScriptName' => false,
+            // 'rules' => [
+            //     ['class' => 'yii\rest\UrlRule', 'controller' => 'api'],
+            // ],
+        ]
     ],
     'params' => $params,
+    
 ];
 
 if (YII_ENV_DEV) {
