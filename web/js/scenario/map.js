@@ -1,9 +1,48 @@
 $(document).ready(function(){
 
-	function initialize() {
-		var map;
-
 	var heatData = [];
+	var heatMap = null;
+	var map = null;
+
+	$.getJSON('http://115.146.95.26:5984/geomelbourne/_design/geo/_spatial/points?bbox=144.3945,-38.2607,145.7647,-37.4598', 
+		function(data) {
+
+			for (var i=0;i<data.rows.length;i++)
+			{	 
+				var time = data.rows[i].value[0];
+				var day = time.substring(0, 3);
+				var hour = time.substring(11, 13);
+				if(!heatData[hour]){
+					heatData[hour] = [];
+				}
+				heatData[hour].push(new google.maps.LatLng(data.rows[i].geometry.coordinates[1], data.rows[i].geometry.coordinates[0]));
+			}
+			console.log(heatData);
+			
+		});
+
+	$('.hour').hover(function(){
+		var hour = $(this).text();
+		var pointArray = new google.maps.MVCArray(heatData[hour]);
+
+		if(heatMap != null){
+			heatMap.setMap(null);
+		}
+
+	  heatMap = new google.maps.visualization.HeatmapLayer({
+	    data: pointArray,
+	    radius: 20,
+	    // dissipating: false
+	  });
+
+	  heatMap.setMap(map);
+
+	});
+
+	function initialize() {
+		
+
+	
 	  var mapOptions = {
 	    zoom: 10,
 	    center: new google.maps.LatLng(-37.793472,144.995804),
@@ -13,24 +52,7 @@ $(document).ready(function(){
 	  map = new google.maps.Map(document.getElementById('map-canvas'),
 	      mapOptions);
 
-	  $.getJSON('http://115.146.95.26:5984/geomelbourne/_design/geo/_spatial/happy?bbox=144.3945,-38.2607,145.7647,-37.4598', 
-		function(data) {
-
-			for (var i=0;i<data.rows.length;i++)
-			{	 
-				heatData.push(new google.maps.LatLng(data.rows[i].geometry.coordinates[1], data.rows[i].geometry.coordinates[0]));
-			}
-			// console.log(heatData);
-			var pointArray = new google.maps.MVCArray(heatData);
-
-			  heatmap = new google.maps.visualization.HeatmapLayer({
-			    data: pointArray,
-			    radius: 20,
-			    // dissipating: false
-			  });
-
-			  heatmap.setMap(map);
-		});
+	  
 
 	  
 	}
