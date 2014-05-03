@@ -1,17 +1,17 @@
-var heatData = {
-	'byDay': [],
-	'byTime': []
-};
+var heatData = null;
+var map = null;
 var heatMap = null;
+var day = null;
+var hour = null;
+var boundsRec = null;
+var type = "happy";
 
 function loadData(type,bounds){
 
 	// Set ui
 	$('.hour, .day').removeClass('btn-success');
 
-	if(heatMap){
-		heatMap.setMap(null);
-	}
+	removeHeatMap();
 
 	$('.loader').show();
 
@@ -22,6 +22,11 @@ function loadData(type,bounds){
 	$.getJSON('http://115.146.95.26:5984/geomelbourne/_design/geo/_spatial/'+type+'?bbox='+bounds, 
 	function(data) {
 		$('.loader').hide();
+		heatData = {
+			'byDay': [],
+			'byTime': [],
+			'byDayTime':[]
+		};
 		for (var i=0;i<data.rows.length;i++)
 		{	 
 			var time = data.rows[i].value[0];
@@ -40,10 +45,80 @@ function loadData(type,bounds){
 			}
 			heatData['byDay'][day].push(point);
 
+			if(!heatData['byDayTime'][day]){
+				heatData['byDayTime'][day] = [];
+			}
+
+			if(!heatData['byDayTime'][day][hour]){
+				heatData['byDayTime'][day][hour] = [];
+			}
+			heatData['byDayTime'][day][hour].push(point);
+
+
 		}
-		console.log(heatData);
-		
+		addHeatMap();
 	});
+}
+
+function removeHeatMap(){
+	if(heatMap != null){
+		heatMap.setMap(null);
+	}
+}
+
+function addHeatMap(){
+	removeHeatMap();
+	$('.hour, .day').removeClass('btn-success');
+
+	var pointArray = null;
+	if(day && hour && heatData['byDayTime'][day] && heatData['byDayTime'][day][hour] ){
+		pointArray = new google.maps.MVCArray(heatData['byDayTime'][day][hour]);
+	}else if(hour && heatData['byTime'][hour]){
+		pointArray = new google.maps.MVCArray(heatData['byTime'][hour]);
+	}else if(day && heatData['byDay'][day]){
+		pointArray = new google.maps.MVCArray(heatData['byDay'][day]);
+	}else{
+		return;
+	}
+
+	if(day){
+		$('.day[value="'+day+'"]').addClass('btn-success');
+	}
+	if(hour){
+		$('.hour[value="'+hour+'"]').addClass('btn-success');
+	}
+
+	heatMap = new google.maps.visualization.HeatmapLayer({
+		data: pointArray,
+		radius: 20,
+		// dissipating: false
+	});
+
+	heatMap.setMap(map);
+}
+
+function addSelectionRectangle(){
+	var bounds = new google.maps.LatLngBounds(
+      new google.maps.LatLng(-38.2607,144.3945),
+      new google.maps.LatLng(-37.4598,145.7647)
+  );
+
+  // Define the rectangle and set its editable property to true.
+  boundsRec = new google.maps.Rectangle({
+    bounds: bounds,
+    editable: true,
+    draggable: true
+  });
+
+  boundsRec.setMap(map);
+  google.maps.event.addListener(boundsRec, 'bounds_changed', updateBounds);
+}
+
+function updateBounds(){
+	var ne = boundsRec.getBounds().getNorthEast();
+  	var sw = boundsRec.getBounds().getSouthWest();
+  	var newBounds =sw.lng()+','+sw.lat()+','+ne.lng()+','+ne.lat();
+  	loadData(type,newBounds);
 }
 
 function toggleHeatmap() {
@@ -81,67 +156,38 @@ function changeOpacity() {
 
 $(document).ready(function(){
 
-	
-	
-	var map = null;
-
-
 	var mapOptions = {
 		zoom: 10,
 	    center: new google.maps.LatLng(-37.793472,144.995804),
-	    mapTypeId: google.maps.MapTypeId.SATELLITE
+	    mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 
 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
-	loadData("happy","144.3945,-38.2607,145.7647,-37.4598");
+	loadData(type,"144.3945,-38.2607,145.7647,-37.4598");
 
 	$('.hour').hover(function(){
-
-		$('.hour, .day').removeClass('btn-success');
-		$(this).addClass('btn-success');
-		var hour = $(this).text();
-		var pointArray = new google.maps.MVCArray(heatData['byTime'][hour]);
-
-		if(heatMap != null){
-			heatMap.setMap(null);
+		hour = $(this).attr("value");
+		if(hour == 'None'){
+			hour = null;
 		}
-
-	  heatMap = new google.maps.visualization.HeatmapLayer({
-	    data: pointArray,
-	    radius: 20,
-	    // dissipating: false
-	  });
-
-	  heatMap.setMap(map);
-
+		addHeatMap();
 	});
 
 	$('.day').hover(function(){
-
-		$('.hour, .day').removeClass('btn-success');
-		$(this).addClass('btn-success');
-		var day = $(this).text();
-		var pointArray = new google.maps.MVCArray(heatData['byDay'][day]);
-
-		if(heatMap != null){
-			heatMap.setMap(null);
+		day = $(this).attr("value");
+		if(day == 'None'){
+			day = null;
 		}
-
-	  heatMap = new google.maps.visualization.HeatmapLayer({
-	    data: pointArray,
-	    radius: 20,
-	    // dissipating: false
-	  });
-
-	  heatMap.setMap(map);
-
+		addHeatMap();
 	});
 
 	$('.type button').click(function(event){
-		var value = $(this).attr('value');
-		loadData(value,"144.3945,-38.2607,145.7647,-37.4598");
+		type= $(this).attr('value');
+		loadData(type,"144.3945,-38.2607,145.7647,-37.4598");
 		event.preventDefault();
 	});
+
+	addSelectionRectangle();
 
 });
