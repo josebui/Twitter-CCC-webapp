@@ -5,6 +5,7 @@ var day = null;
 var hour = null;
 var boundsRec = null;
 var type = "happy";
+var bounds = "144.3945,-38.2607,145.7647,-37.4598";
 
 function loadData(type,bounds){
 
@@ -117,8 +118,8 @@ function addSelectionRectangle(){
 function updateBounds(){
 	var ne = boundsRec.getBounds().getNorthEast();
   	var sw = boundsRec.getBounds().getSouthWest();
-  	var newBounds =sw.lng()+','+sw.lat()+','+ne.lng()+','+ne.lat();
-  	loadData(type,newBounds);
+  	bounds =sw.lng()+','+sw.lat()+','+ne.lng()+','+ne.lat();
+  	loadData(type,bounds);
 }
 
 function toggleHeatmap() {
@@ -164,7 +165,7 @@ $(document).ready(function(){
 
 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
-	loadData(type,"144.3945,-38.2607,145.7647,-37.4598");
+	loadData(type,bounds);
 
 	$('.hour').hover(function(){
 		hour = $(this).attr("value");
@@ -184,7 +185,7 @@ $(document).ready(function(){
 
 	$('.type button').click(function(event){
 		type= $(this).attr('value');
-		loadData(type,"144.3945,-38.2607,145.7647,-37.4598");
+		loadData(type,bounds);
 		event.preventDefault();
 	});
 
