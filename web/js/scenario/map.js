@@ -1,4 +1,4 @@
-var heatData = null;
+var completeData = null;
 var map = null;
 var heatMap = null;
 var day = null;
@@ -23,11 +23,12 @@ function loadData(type,bounds){
 	$.getJSON('http://115.146.95.26:5984/geomelbourne/_design/geo/_spatial/'+type+'?bbox='+bounds, 
 	function(data) {
 		$('.loader').hide();
-		heatData = {
-			'byDay': [],
-			'byTime': [],
-			'byDayTime':[]
-		};
+		// completeData = {
+		// 	'byDay': [],
+		// 	'byTime': [],
+		// 	'byDayTime':[]
+		// };
+		completeData = [];
 		for (var i=0;i<data.rows.length;i++)
 		{	 
 			var time = data.rows[i].value[0];
@@ -36,25 +37,29 @@ function loadData(type,bounds){
 			
 			var point = new google.maps.LatLng(data.rows[i].geometry.coordinates[1], data.rows[i].geometry.coordinates[0]);
 
-			if(!heatData['byTime'][hour]){
-				heatData['byTime'][hour] = [];
-			}
-			heatData['byTime'][hour].push(point);
+			// if(!completeData['byTime'][hour]){
+			// 	completeData['byTime'][hour] = [];
+			// }
+			// completeData['byTime'][hour].push(point);
 
-			if(!heatData['byDay'][day]){
-				heatData['byDay'][day] = [];
-			}
-			heatData['byDay'][day].push(point);
+			// if(!completeData['byDay'][day]){
+			// 	completeData['byDay'][day] = [];
+			// }
+			// completeData['byDay'][day].push(point);
 
-			if(!heatData['byDayTime'][day]){
-				heatData['byDayTime'][day] = [];
-			}
+			// if(!completeData['byDayTime'][day]){
+			// 	completeData['byDayTime'][day] = [];
+			// }
 
-			if(!heatData['byDayTime'][day][hour]){
-				heatData['byDayTime'][day][hour] = [];
-			}
-			heatData['byDayTime'][day][hour].push(point);
-
+			// if(!completeData['byDayTime'][day][hour]){
+			// 	completeData['byDayTime'][day][hour] = [];
+			// }
+			// completeData['byDayTime'][day][hour].push(point);
+			completeData.push({
+				day: day,
+				hour: hour,
+				position: point
+			});
 
 		}
 		addHeatMap();
@@ -71,13 +76,18 @@ function addHeatMap(){
 	removeHeatMap();
 	$('.hour, .day').removeClass('btn-success');
 
+	var heatMapData = updateHeatMapData();
+	if(!heatMapData){
+		return;
+	}
+
 	var pointArray = null;
-	if(day && hour && heatData['byDayTime'][day] && heatData['byDayTime'][day][hour] ){
-		pointArray = new google.maps.MVCArray(heatData['byDayTime'][day][hour]);
-	}else if(hour && heatData['byTime'][hour]){
-		pointArray = new google.maps.MVCArray(heatData['byTime'][hour]);
-	}else if(day && heatData['byDay'][day]){
-		pointArray = new google.maps.MVCArray(heatData['byDay'][day]);
+	if(day && hour && heatMapData['byDayTime'][day] && heatMapData['byDayTime'][day][hour] ){
+		pointArray = new google.maps.MVCArray(heatMapData['byDayTime'][day][hour]);
+	}else if(hour && heatMapData['byTime'][hour]){
+		pointArray = new google.maps.MVCArray(heatMapData['byTime'][hour]);
+	}else if(day && heatMapData['byDay'][day]){
+		pointArray = new google.maps.MVCArray(heatMapData['byDay'][day]);
 	}else{
 		return;
 	}
@@ -98,6 +108,48 @@ function addHeatMap(){
 	heatMap.setMap(map);
 }
 
+function updateHeatMapData(){
+	var heatMapData = {
+		'byDay': [],
+		'byTime': [],
+		'byDayTime':[]
+	};
+	if(!completeData){
+		return null;
+	}
+	for (var i = completeData.length - 1; i >= 0; i--) {
+		var element = completeData[i];
+		var hour = element.hour;
+		var day = element.day;
+		var point = element.position;
+
+		if(boundsRec && !boundsRec.getBounds().contains(point)){
+			continue;
+		}
+
+		if(!heatMapData['byTime'][hour]){
+			heatMapData['byTime'][hour] = [];
+		}
+		heatMapData['byTime'][hour].push(point);
+
+		if(!heatMapData['byDay'][day]){
+			heatMapData['byDay'][day] = [];
+		}
+		heatMapData['byDay'][day].push(point);
+
+		if(!heatMapData['byDayTime'][day]){
+			heatMapData['byDayTime'][day] = [];
+		}
+
+		if(!heatMapData['byDayTime'][day][hour]){
+			heatMapData['byDayTime'][day][hour] = [];
+		}
+		heatMapData['byDayTime'][day][hour].push(point);
+	};
+
+	return heatMapData;
+}
+
 function addSelectionRectangle(){
 	var bounds = new google.maps.LatLngBounds(
       new google.maps.LatLng(-38.2607,144.3945),
@@ -116,10 +168,11 @@ function addSelectionRectangle(){
 }
 
 function updateBounds(){
-	var ne = boundsRec.getBounds().getNorthEast();
-  	var sw = boundsRec.getBounds().getSouthWest();
-  	bounds =sw.lng()+','+sw.lat()+','+ne.lng()+','+ne.lat();
-  	loadData(type,bounds);
+	// var ne = boundsRec.getBounds().getNorthEast();
+ //  	var sw = boundsRec.getBounds().getSouthWest();
+ //  	bounds =sw.lng()+','+sw.lat()+','+ne.lng()+','+ne.lat();
+ //  	loadData(type,bounds);
+ 	addHeatMap();
 }
 
 function toggleHeatmap() {
