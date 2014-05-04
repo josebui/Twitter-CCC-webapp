@@ -4,9 +4,11 @@ var map = null;
 var heatMap = null;
 var day = null;
 var hour = null;
+var lang = null;
 var boundsRec = null;
 var type = "happy";
 var bounds = "144.3945,-38.2607,145.7647,-37.4598";
+var langCodes = [];
 
 function loadData(type,bounds){
 
@@ -29,9 +31,18 @@ function loadData(type,bounds){
 		for (var i=0;i<data.rows.length;i++)
 		{	 
 			var time = data.rows[i].value[0];
+			var lang = data.rows[i].value[1];
 			var date = parseDate(time,10);
 			var day = date.day; //time.substring(0, 3);
 			var hour = date.hour;// time.substring(11, 13);
+
+			if(lang!='en'){
+				//console.log(lang);
+			}
+
+			if(langCodes.indexOf(lang) == -1){
+				langCodes.push(lang);
+			}
 			
 			var point = new google.maps.LatLng(data.rows[i].geometry.coordinates[1], data.rows[i].geometry.coordinates[0]);
 
@@ -39,12 +50,22 @@ function loadData(type,bounds){
 				day: day,
 				hour: hour,
 				position: point,
-				id: data.rows[i].id
+				id: data.rows[i].id,
+				lang: lang
 			});
 
 		}
+		updateLangFilter();
 		addHeatMap();
 	});
+}
+
+function updateLangFilter(){
+	$('.lang-list').html('');
+	$('.lang-list').append('<button type="button" class="lang none btn btn-default" value="none">None</button>');
+	for (var i = 0; i < langCodes.length; i++) {
+	 	$('.lang-list').append('<button type="button" class="lang btn btn-default" value="'+langCodes[i]+'">'+langCodes[i]+'</button>');
+	};
 }
 
 function removeHeatMap(){
@@ -57,27 +78,27 @@ function addHeatMap(){
 	removeHeatMap();
 	$('.hour, .day').removeClass('btn-success');
 
-	var heatMapData = updateHeatMapData();
+	var heatMapData = updateHeatMapData(day,hour,lang);
 	if(!heatMapData){
 		return;
 	}
 
 	var pointArray = null;
-	var selectedData = null;
-	if(day && hour && heatMapData['byDayTime'][day] && heatMapData['byDayTime'][day][hour] ){
-		selectedData = heatMapData['byDayTime'][day][hour];
-		// pointArray = new google.maps.MVCArray(heatMapData['byDayTime'][day][hour].points);
-	}else if(hour && heatMapData['byTime'][hour]){
-		selectedData = heatMapData['byTime'][hour];
-		// pointArray = new google.maps.MVCArray(heatMapData['byTime'][hour].pointd);
-	}else if(day && heatMapData['byDay'][day]){
-		selectedData = heatMapData['byDay'][day];
-		// pointArray = new google.maps.MVCArray(heatMapData['byDay'][day].points);
-	}else{
-		return;
-	}
+	// var selectedData = null;
+	// if(day && hour && heatMapData['byDayTime'][day] && heatMapData['byDayTime'][day][hour] ){
+	// 	selectedData = heatMapData['byDayTime'][day][hour];
+	// 	// pointArray = new google.maps.MVCArray(heatMapData['byDayTime'][day][hour].points);
+	// }else if(hour && heatMapData['byTime'][hour]){
+	// 	selectedData = heatMapData['byTime'][hour];
+	// 	// pointArray = new google.maps.MVCArray(heatMapData['byTime'][hour].pointd);
+	// }else if(day && heatMapData['byDay'][day]){
+	// 	selectedData = heatMapData['byDay'][day];
+	// 	// pointArray = new google.maps.MVCArray(heatMapData['byDay'][day].points);
+	// }else{
+	// 	return;
+	// }
 
-	pointArray = new google.maps.MVCArray(selectedData.points);
+	pointArray = new google.maps.MVCArray(heatMapData.points);
 
 	if(day){
 		$('.day[value="'+day+'"]').addClass('btn-success');
@@ -94,15 +115,20 @@ function addHeatMap(){
 
 	heatMap.setMap(map);
 
-	updateTweetsText(selectedData.ids);
+	updateTweetsText(heatMapData.ids);
 }
 
-function updateHeatMapData(){
+function updateHeatMapData(paramDay,paramHour,paramLang){
+	// var heatMapData = {
+	// 	'byDay': [],
+	// 	'byTime': [],
+	// 	'byDayTime':[]
+	// };
+
 	var heatMapData = {
-		'byDay': [],
-		'byTime': [],
-		'byDayTime':[]
-	};
+		points:[],
+		ids:[]
+	}
 	if(!completeData){
 		return null;
 	}
@@ -116,39 +142,60 @@ function updateHeatMapData(){
 			continue;
 		}
 
-		if(!heatMapData['byTime'][hour]){
-			heatMapData['byTime'][hour] = {
-				points:[],
-				ids:[]
-			};
-		}
-		heatMapData['byTime'][hour].points.push(point);
-		heatMapData['byTime'][hour].ids.push(element.id);
-
-		if(!heatMapData['byDay'][day]){
-			heatMapData['byDay'][day] = {
-				points:[],
-				ids:[]
-			};
-		}
-		heatMapData['byDay'][day].points.push(point);
-		heatMapData['byDay'][day].ids.push(element.id);
-
-		if(!heatMapData['byDayTime'][day]){
-			heatMapData['byDayTime'][day] = {
-				points:[],
-				ids:[]
-			};
+		if(paramDay){
+			if(paramDay != day){
+				continue;
+			}
 		}
 
-		if(!heatMapData['byDayTime'][day][hour]){
-			heatMapData['byDayTime'][day][hour] = {
-				points:[],
-				ids:[]
-			};
+		if(paramHour){
+			if(paramHour != hour){
+				continue;
+			}
 		}
-		heatMapData['byDayTime'][day][hour].points.push(point);
-		heatMapData['byDayTime'][day][hour].ids.push(element.id);
+
+		if(paramLang){
+			if(paramLang != element.lang){
+				continue;
+			}
+		}
+
+		heatMapData.points.push(point);
+		heatMapData.ids.push(element.id)
+
+		// if(!heatMapData['byTime'][hour]){
+		// 	heatMapData['byTime'][hour] = {
+		// 		points:[],
+		// 		ids:[]
+		// 	};
+		// }
+		// heatMapData['byTime'][hour].points.push(point);
+		// heatMapData['byTime'][hour].ids.push(element.id);
+
+		// if(!heatMapData['byDay'][day]){
+		// 	heatMapData['byDay'][day] = {
+		// 		points:[],
+		// 		ids:[]
+		// 	};
+		// }
+		// heatMapData['byDay'][day].points.push(point);
+		// heatMapData['byDay'][day].ids.push(element.id);
+
+		// if(!heatMapData['byDayTime'][day]){
+		// 	heatMapData['byDayTime'][day] = {
+		// 		points:[],
+		// 		ids:[]
+		// 	};
+		// }
+
+		// if(!heatMapData['byDayTime'][day][hour]){
+		// 	heatMapData['byDayTime'][day][hour] = {
+		// 		points:[],
+		// 		ids:[]
+		// 	};
+		// }
+		// heatMapData['byDayTime'][day][hour].points.push(point);
+		// heatMapData['byDayTime'][day][hour].ids.push(element.id);
 	};
 
 	return heatMapData;
@@ -304,7 +351,7 @@ $(document).ready(function(){
 
 	$('.hour').click(function(){
 		hour = $(this).attr("value");
-		if(hour == 'None'){
+		if(hour == 'none'){
 			hour = null;
 		}
 		addHeatMap();
@@ -312,7 +359,7 @@ $(document).ready(function(){
 
 	$('.day').click(function(){
 		day = $(this).attr("value");
-		if(day == 'None'){
+		if(day == 'none'){
 			day = null;
 		}
 		addHeatMap();

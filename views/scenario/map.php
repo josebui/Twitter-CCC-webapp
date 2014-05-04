@@ -1,6 +1,7 @@
     <div class="btn-group type">
       <button type="button" class="btn btn-default" value="happy">Happy</button>
       <button type="button" class="btn btn-default" value="sad">Sad</button>
+      <button type="button" class="btn btn-default" value="lang">Lang</button>
     </div>
     <span class="label label-info loader">Loading...</span>
     <br/><br/>
@@ -23,6 +24,10 @@
 
       <button type="button" class="day btn btn-default" value="<?php echo $value; ?>"><?php echo $value; ?></button>
       <?php }  ?>
+    </div><br/><br/>
+    <span class="label label-default">By lang:</span>
+    <div class="btn-group lang-list">
+      <button type="button" class="lang none btn btn-default" value="none">None</button>
     </div><br/><br/>
 
 <div class="row">
