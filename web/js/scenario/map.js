@@ -162,7 +162,7 @@ function updateTweetsText(tweetsIds){
 		$.getJSON('http://115.146.95.26:5984/geomelbourne/'+tweetsIds[i], 
 		function(data) {
 			if($('.tweets .list-group-item[tweetid="'+data.id+'"]').length == 0){
-				$('.tweets').append('<li class="list-group-item" tweetid="'+data.id+'"><span class="label label-default">'+data.created_at+'</span>&nbsp;&nbsp;'+data.text+'</li>');
+				$('.tweets').append('<li style="font-size:11px;" class="list-group-item" tweetid="'+data.id+'"><span class="label label-default">'+data.created_at+'</span>&nbsp;&nbsp;'+data.text+'</li>');
 			}
 		});
 	};
@@ -294,7 +294,7 @@ $(document).ready(function(){
 
 	loadData(type,bounds);
 
-	$('.hour').hover(function(){
+	$('.hour').click(function(){
 		hour = $(this).attr("value");
 		if(hour == 'None'){
 			hour = null;
@@ -302,7 +302,7 @@ $(document).ready(function(){
 		addHeatMap();
 	});
 
-	$('.day').hover(function(){
+	$('.day').click(function(){
 		day = $(this).attr("value");
 		if(day == 'None'){
 			day = null;
