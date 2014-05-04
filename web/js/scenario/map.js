@@ -1,3 +1,4 @@
+
 var completeData = null;
 var map = null;
 var heatMap = null;
@@ -23,42 +24,22 @@ function loadData(type,bounds){
 	$.getJSON('http://115.146.95.26:5984/geomelbourne/_design/geo/_spatial/'+type+'?bbox='+bounds, 
 	function(data) {
 		$('.loader').hide();
-		// completeData = {
-		// 	'byDay': [],
-		// 	'byTime': [],
-		// 	'byDayTime':[]
-		// };
+
 		completeData = [];
 		for (var i=0;i<data.rows.length;i++)
 		{	 
 			var time = data.rows[i].value[0];
+			var date = parseDate(time);
 			var day = time.substring(0, 3);
 			var hour = time.substring(11, 13);
 			
 			var point = new google.maps.LatLng(data.rows[i].geometry.coordinates[1], data.rows[i].geometry.coordinates[0]);
 
-			// if(!completeData['byTime'][hour]){
-			// 	completeData['byTime'][hour] = [];
-			// }
-			// completeData['byTime'][hour].push(point);
-
-			// if(!completeData['byDay'][day]){
-			// 	completeData['byDay'][day] = [];
-			// }
-			// completeData['byDay'][day].push(point);
-
-			// if(!completeData['byDayTime'][day]){
-			// 	completeData['byDayTime'][day] = [];
-			// }
-
-			// if(!completeData['byDayTime'][day][hour]){
-			// 	completeData['byDayTime'][day][hour] = [];
-			// }
-			// completeData['byDayTime'][day][hour].push(point);
 			completeData.push({
 				day: day,
 				hour: hour,
-				position: point
+				position: point,
+				id: data.rows[i].id
 			});
 
 		}
@@ -101,7 +82,7 @@ function addHeatMap(){
 
 	heatMap = new google.maps.visualization.HeatmapLayer({
 		data: pointArray,
-		radius: 20,
+		radius: 15,
 		// dissipating: false
 	});
 
@@ -117,6 +98,7 @@ function updateHeatMapData(){
 	if(!completeData){
 		return null;
 	}
+	var tweetsIds = [];
 	for (var i = completeData.length - 1; i >= 0; i--) {
 		var element = completeData[i];
 		var hour = element.hour;
@@ -125,6 +107,10 @@ function updateHeatMapData(){
 
 		if(boundsRec && !boundsRec.getBounds().contains(point)){
 			continue;
+		}
+
+		if(tweetsIds.length < 10){
+			tweetsIds.push(element.id);
 		}
 
 		if(!heatMapData['byTime'][hour]){
@@ -147,7 +133,21 @@ function updateHeatMapData(){
 		heatMapData['byDayTime'][day][hour].push(point);
 	};
 
+	updateTweetsText(tweetsIds);
+
 	return heatMapData;
+}
+
+function updateTweetsText(tweetsIds){
+	// TODO http://115.146.95.26:5984/geomelbourne/_design/data/_view/text?keys=["457019701592588288","457027394574905344"]
+	$('.tweets').html('');
+	for (var i = tweetsIds.length-1; i >= 0; i--) {
+		$.getJSON('http://115.146.95.26:5984/geomelbourne/'+tweetsIds[i], 
+		function(data) {
+			$('.tweets').append('<li class="list-group-item"><span class="label label-default">'+data.created_at+'</span>&nbsp;&nbsp;'+data.text+'</li>');
+		});
+	};
+	
 }
 
 function addSelectionRectangle(){
@@ -160,7 +160,8 @@ function addSelectionRectangle(){
   boundsRec = new google.maps.Rectangle({
     bounds: bounds,
     editable: true,
-    draggable: true
+    draggable: true,
+    fillOpacity: 0.08
   });
 
   boundsRec.setMap(map);
@@ -175,8 +176,62 @@ function updateBounds(){
  	addHeatMap();
 }
 
+function getTypesCount(){
+	var ne = boundsRec.getBounds().getNorthEast();
+ 	var sw = boundsRec.getBounds().getSouthWest();
+ 	var bounds =sw.lng()+','+sw.lat()+','+ne.lng()+','+ne.lat();
+	$.getJSON('http://115.146.95.26:5984/geomelbourne/_design/geo/_spatial/happy?bbox='+bounds+'&count=true', 
+	function(dataHappy) {
+		$.getJSON('http://115.146.95.26:5984/geomelbourne/_design/geo/_spatial/sad?bbox='+bounds+'&count=true', 
+		function(dataSad) {
+			drawTable(dataHappy,dataSad);
+		});
+		
+	});
+}
+
+function drawTable(dataHappy,dataSad){
+	var table = new google.visualization.DataTable();
+    
+    table.addColumn('string', 'Mood');
+    table.addColumn('number', 'Tweets');
+
+    // for(var i=0;i<data.rows.length; i++){
+        table.addRow();
+        table.setValue(0,0, 'positive');
+        table.setValue(0,1, dataHappy.count);
+
+        table.addRow();
+        table.setValue(1,0, 'negative');
+        table.setValue(1,1, dataSad.count);
+    // }
+  
+    var options = {
+      title: '',
+      hAxis: {title: 'Mood'},
+      width: '90%', 
+      height: 500,
+      vAxis: {maxValue: 2}
+     
+    };
+
+
+  	var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+  	chart.draw(table,options);
+} 
+
 function toggleHeatmap() {
   heatmap.setMap(heatmap.getMap() ? null : map);
+}
+
+function parseTwitterDate(aDate)
+{   
+  return new Date(Date.parse(aDate.replace(/( \+)/, ' UTC$1')));
+  //sample: Wed Mar 13 09:06:07 +0000 2013 
+}
+function parseDate(str) {
+    var v=str.split(' ');
+    return new Date(Date.parse(v[1]+" "+v[2]+", "+v[5]+" "+v[3]+" UTC"));
 }
 
 function changeGradient() {
@@ -211,7 +266,7 @@ function changeOpacity() {
 $(document).ready(function(){
 
 	var mapOptions = {
-		zoom: 10,
+		zoom: 9,
 	    center: new google.maps.LatLng(-37.793472,144.995804),
 	    mapTypeId: google.maps.MapTypeId.ROADMAP
 	};

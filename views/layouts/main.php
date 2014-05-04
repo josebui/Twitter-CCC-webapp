@@ -39,7 +39,9 @@ AppAsset::register($this);
                     ['label' => 'About', 'url' => ['/site/about']],
                     // ['label' => 'About', 'url' => ['/site/about']],
                     ['label' => 'Scenarios', 'items' => [
-                        ['label'=> 'Heat map', 'url' =>['/scenario/map']]
+                        ['label'=> 'Heat map', 'url' =>['/scenario/map']],
+                        ['label'=> 'Mood by location', 'url' =>['/scenario/mood-location']],
+                        ['label'=> 'Time charts', 'url' =>['/scenario/time-charts']],
                     ]],
                     // Yii::$app->user->isGuest ?
                     //     ['label' => 'Login', 'url' => ['/site/login']] :
