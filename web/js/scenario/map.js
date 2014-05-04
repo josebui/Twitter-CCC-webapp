@@ -63,15 +63,21 @@ function addHeatMap(){
 	}
 
 	var pointArray = null;
+	var selectedData = null;
 	if(day && hour && heatMapData['byDayTime'][day] && heatMapData['byDayTime'][day][hour] ){
-		pointArray = new google.maps.MVCArray(heatMapData['byDayTime'][day][hour]);
+		selectedData = heatMapData['byDayTime'][day][hour];
+		// pointArray = new google.maps.MVCArray(heatMapData['byDayTime'][day][hour].points);
 	}else if(hour && heatMapData['byTime'][hour]){
-		pointArray = new google.maps.MVCArray(heatMapData['byTime'][hour]);
+		selectedData = heatMapData['byTime'][hour];
+		// pointArray = new google.maps.MVCArray(heatMapData['byTime'][hour].pointd);
 	}else if(day && heatMapData['byDay'][day]){
-		pointArray = new google.maps.MVCArray(heatMapData['byDay'][day]);
+		selectedData = heatMapData['byDay'][day];
+		// pointArray = new google.maps.MVCArray(heatMapData['byDay'][day].points);
 	}else{
 		return;
 	}
+
+	pointArray = new google.maps.MVCArray(selectedData.points);
 
 	if(day){
 		$('.day[value="'+day+'"]').addClass('btn-success');
@@ -87,6 +93,8 @@ function addHeatMap(){
 	});
 
 	heatMap.setMap(map);
+
+	updateTweetsText(selectedData.ids);
 }
 
 function updateHeatMapData(){
@@ -98,7 +106,6 @@ function updateHeatMapData(){
 	if(!completeData){
 		return null;
 	}
-	var tweetsIds = [];
 	for (var i = completeData.length - 1; i >= 0; i--) {
 		var element = completeData[i];
 		var hour = element.hour;
@@ -109,31 +116,40 @@ function updateHeatMapData(){
 			continue;
 		}
 
-		if(tweetsIds.length < 10){
-			tweetsIds.push(element.id);
-		}
-
 		if(!heatMapData['byTime'][hour]){
-			heatMapData['byTime'][hour] = [];
+			heatMapData['byTime'][hour] = {
+				points:[],
+				ids:[]
+			};
 		}
-		heatMapData['byTime'][hour].push(point);
+		heatMapData['byTime'][hour].points.push(point);
+		heatMapData['byTime'][hour].ids.push(element.id);
 
 		if(!heatMapData['byDay'][day]){
-			heatMapData['byDay'][day] = [];
+			heatMapData['byDay'][day] = {
+				points:[],
+				ids:[]
+			};
 		}
-		heatMapData['byDay'][day].push(point);
+		heatMapData['byDay'][day].points.push(point);
+		heatMapData['byDay'][day].ids.push(element.id);
 
 		if(!heatMapData['byDayTime'][day]){
-			heatMapData['byDayTime'][day] = [];
+			heatMapData['byDayTime'][day] = {
+				points:[],
+				ids:[]
+			};
 		}
 
 		if(!heatMapData['byDayTime'][day][hour]){
-			heatMapData['byDayTime'][day][hour] = [];
+			heatMapData['byDayTime'][day][hour] = {
+				points:[],
+				ids:[]
+			};
 		}
-		heatMapData['byDayTime'][day][hour].push(point);
+		heatMapData['byDayTime'][day][hour].points.push(point);
+		heatMapData['byDayTime'][day][hour].ids.push(element.id);
 	};
-
-	updateTweetsText(tweetsIds);
 
 	return heatMapData;
 }
@@ -141,10 +157,13 @@ function updateHeatMapData(){
 function updateTweetsText(tweetsIds){
 	// TODO http://115.146.95.26:5984/geomelbourne/_design/data/_view/text?keys=["457019701592588288","457027394574905344"]
 	$('.tweets').html('');
-	for (var i = tweetsIds.length-1; i >= 0; i--) {
+	var len = ((tweetsIds.length-1) > 10)?10:(tweetsIds.length-1);
+	for (var i = len; i >= 0; i--) {
 		$.getJSON('http://115.146.95.26:5984/geomelbourne/'+tweetsIds[i], 
 		function(data) {
-			$('.tweets').append('<li class="list-group-item"><span class="label label-default">'+data.created_at+'</span>&nbsp;&nbsp;'+data.text+'</li>');
+			if($('.tweets .list-group-item[tweetid="'+data.id+'"]').length == 0){
+				$('.tweets').append('<li class="list-group-item" tweetid="'+data.id+'"><span class="label label-default">'+data.created_at+'</span>&nbsp;&nbsp;'+data.text+'</li>');
+			}
 		});
 	};
 	
