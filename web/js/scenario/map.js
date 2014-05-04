@@ -29,9 +29,9 @@ function loadData(type,bounds){
 		for (var i=0;i<data.rows.length;i++)
 		{	 
 			var time = data.rows[i].value[0];
-			var date = parseDate(time);
-			var day = time.substring(0, 3);
-			var hour = time.substring(11, 13);
+			var date = parseDate(time,10);
+			var day = date.day; //time.substring(0, 3);
+			var hour = date.hour;// time.substring(11, 13);
 			
 			var point = new google.maps.LatLng(data.rows[i].geometry.coordinates[1], data.rows[i].geometry.coordinates[0]);
 
@@ -248,9 +248,17 @@ function parseTwitterDate(aDate)
   return new Date(Date.parse(aDate.replace(/( \+)/, ' UTC$1')));
   //sample: Wed Mar 13 09:06:07 +0000 2013 
 }
-function parseDate(str) {
-    var v=str.split(' ');
-    return new Date(Date.parse(v[1]+" "+v[2]+", "+v[5]+" "+v[3]+" UTC"));
+function parseDate(str,timeDiff) {
+	var date = new Date(str);
+	date.setHours(date.getHours() + timeDiff);
+	var text = date.toUTCString();
+	return {
+		day: text.substring(0,3),
+		hour: text.substring(17,19)
+	};
+
+    // var v=str.split(' ');
+    // return new Date(Date.parse(v[1]+" "+v[2]+", "+v[5]+" "+v[3]+" UTC"));
 }
 
 function changeGradient() {
