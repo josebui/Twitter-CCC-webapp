@@ -13,7 +13,7 @@ var langCodes = [];
 function loadData(type,bounds){
 
 	// Set ui
-	$('.hour, .day .lang').removeClass('btn-success');
+	$('.hour, .day, .lang').removeClass('btn-success');
 
 	removeHeatMap();
 
@@ -84,7 +84,7 @@ function removeHeatMap(){
 
 function addHeatMap(){
 	removeHeatMap();
-	$('.hour, .day .lang').removeClass('btn-success');
+	$('.hour, .day, .lang').removeClass('btn-success');
 
 	var heatMapData = updateHeatMapData(day,hour,lang);
 	if(!heatMapData){
