@@ -13,7 +13,7 @@ var langCodes = [];
 function loadData(type,bounds){
 
 	// Set ui
-	$('.hour, .day').removeClass('btn-success');
+	$('.hour, .day .lang').removeClass('btn-success');
 
 	removeHeatMap();
 
@@ -66,6 +66,14 @@ function updateLangFilter(){
 	for (var i = 0; i < langCodes.length; i++) {
 	 	$('.lang-list').append('<button type="button" class="lang btn btn-default" value="'+langCodes[i]+'">'+langCodes[i]+'</button>');
 	};
+
+	$('.lang').click(function(){
+		lang = $(this).attr("value");
+		if(lang == 'none'){
+			lang = null;
+		}
+		addHeatMap();
+	});
 }
 
 function removeHeatMap(){
@@ -76,7 +84,7 @@ function removeHeatMap(){
 
 function addHeatMap(){
 	removeHeatMap();
-	$('.hour, .day').removeClass('btn-success');
+	$('.hour, .day .lang').removeClass('btn-success');
 
 	var heatMapData = updateHeatMapData(day,hour,lang);
 	if(!heatMapData){
@@ -105,6 +113,9 @@ function addHeatMap(){
 	}
 	if(hour){
 		$('.hour[value="'+hour+'"]').addClass('btn-success');
+	}
+	if(lang){
+		$('.lang[value="'+lang+'"]').addClass('btn-success');	
 	}
 
 	heatMap = new google.maps.visualization.HeatmapLayer({
@@ -206,7 +217,7 @@ function updateTweetsText(tweetsIds){
 	$('.tweets').html('');
 	var len = ((tweetsIds.length-1) > 10)?10:(tweetsIds.length-1);
 	for (var i = len; i >= 0; i--) {
-		$.getJSON('http://115.146.95.26:5984/geomelbourne/'+tweetsIds[i], 
+		$.getJSON('http://115.146.94.20:5984/geomelbourne/'+tweetsIds[i], 
 		function(data) {
 			if($('.tweets .list-group-item[tweetid="'+data.id+'"]').length == 0){
 				$('.tweets').append('<li style="font-size:11px;" class="list-group-item" tweetid="'+data.id+'"><span class="label label-default">'+data.created_at+'</span>&nbsp;&nbsp;'+data.text+'</li>');
@@ -246,9 +257,9 @@ function getTypesCount(){
 	var ne = boundsRec.getBounds().getNorthEast();
  	var sw = boundsRec.getBounds().getSouthWest();
  	var bounds =sw.lng()+','+sw.lat()+','+ne.lng()+','+ne.lat();
-	$.getJSON('http://115.146.95.26:5984/geomelbourne/_design/geo/_spatial/happy?bbox='+bounds+'&count=true', 
+	$.getJSON('http://115.146.94.20:5984/geomelbourne/_design/geo/_spatial/happy?bbox='+bounds+'&count=true', 
 	function(dataHappy) {
-		$.getJSON('http://115.146.95.26:5984/geomelbourne/_design/geo/_spatial/sad?bbox='+bounds+'&count=true', 
+		$.getJSON('http://115.146.94.20:5984/geomelbourne/_design/geo/_spatial/sad?bbox='+bounds+'&count=true', 
 		function(dataSad) {
 			drawTable(dataHappy,dataSad);
 		});
