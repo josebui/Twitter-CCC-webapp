@@ -23,7 +23,7 @@ function loadData(type,bounds){
 	$('.type button[value="'+type+'"]').addClass('btn-success');
 
 	// Load
-	$.getJSON('http://115.146.94.26:5984/geomelbourne/_design/geo/_spatial/'+type+'?bbox='+bounds, 
+	$.getJSON('http://115.146.94.20:5984/geomelbourne/_design/geo/_spatial/'+type+'?bbox='+bounds, 
 	function(data) {
 		$('.loader').hide();
 

@@ -37,9 +37,9 @@ function getTypesCount(){
 	var ne = boundsRec.getBounds().getNorthEast();
  	var sw = boundsRec.getBounds().getSouthWest();
  	var bounds =sw.lng()+','+sw.lat()+','+ne.lng()+','+ne.lat();
-	$.getJSON('http://115.146.94.26:5984/geomelbourne/_design/geo/_spatial/happy?bbox='+bounds+'&count=true', 
+	$.getJSON('http://115.146.94.20:5984/geomelbourne/_design/geo/_spatial/happy?bbox='+bounds+'&count=true', 
 	function(dataHappy) {
-		$.getJSON('http://115.146.94.26:5984/geomelbourne/_design/geo/_spatial/sad?bbox='+bounds+'&count=true', 
+		$.getJSON('http://115.146.94.20:5984/geomelbourne/_design/geo/_spatial/sad?bbox='+bounds+'&count=true', 
 		function(dataSad) {
 			drawTable(dataHappy,dataSad);
 		});
