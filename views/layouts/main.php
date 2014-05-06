@@ -38,10 +38,15 @@ AppAsset::register($this);
                     ['label' => 'Home', 'url' => ['/site/index']],
                     ['label' => 'About', 'url' => ['/site/about']],
                     // ['label' => 'About', 'url' => ['/site/about']],
-                    ['label' => 'Scenarios', 'items' => [
-                        ['label'=> 'Heat map', 'url' =>['/scenario/map']],
-                        ['label'=> 'Mood by location', 'url' =>['/scenario/mood-location']],
-                        ['label'=> 'Time charts', 'url' =>['/scenario/time-charts']],
+                    ['label' => 'Melbourne Scenarios', 'items' => [
+                        ['label'=> 'Heat map', 'url' =>['/scenario/map?city=melbourne']],
+                        ['label'=> 'Mood by location', 'url' =>['/scenario/mood-location?city=melbourne']],
+                        ['label'=> 'Time charts', 'url' =>['/scenario/time-charts?city=melbourne']],
+                    ]],
+                    ['label' => 'Philadelphia Scenarios', 'items' => [
+                        ['label'=> 'Heat map', 'url' =>['/scenario/map?city=philadelphia']],
+                        ['label'=> 'Mood by location', 'url' =>['/scenario/mood-location?city=philadelphia']],
+                        ['label'=> 'Time charts', 'url' =>['/scenario/time-charts?city=philadelphia']],
                     ]],
                     // Yii::$app->user->isGuest ?
                     //     ['label' => 'Login', 'url' => ['/site/login']] :

@@ -342,6 +342,9 @@ function drawTable(frequencies,title,divId){
 
     var cont = 0;
     for (key in frequencies) {
+    	if(divId == "lang-chart" && !$('#show-english').is(':checked') && key == 'en'){
+    		continue;
+    	}
     	table.addRow();
         table.setValue(cont,0, key);
         table.setValue(cont++,1, frequencies[key]);
@@ -468,5 +471,9 @@ $(document).ready(function(){
 			$(this).text('Hide bounds box');
 		}
 		event.preventDefault();
+	});
+
+	$('#show-english').change(function(){
+		drawCharts();
 	});
 });

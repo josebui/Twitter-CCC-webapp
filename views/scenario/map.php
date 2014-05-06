@@ -71,6 +71,11 @@
         <div id="hour-chart" ></div>
       </div>
       <div class="tab-pane" id="lang-tab">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" id="show-english">Show english
+          </label>
+        </div>
         <div id="lang-chart" ></div>
       </div>
     </div>  
