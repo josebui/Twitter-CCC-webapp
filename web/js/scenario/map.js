@@ -27,6 +27,8 @@ function loadData(type,bounds){
 	$('.type button').removeClass('btn-success');
 	$('.type button[value="'+type+'"]').addClass('btn-success');
 
+	langCodes = [];
+
 	// Load
 	$.getJSON(requestUrl+'/_design/geo/_spatial/'+type+'?bbox='+bounds, 
 	function(data) {
@@ -40,10 +42,6 @@ function loadData(type,bounds){
 			var date = parseDate(time,10);
 			var day = date.day; //time.substring(0, 3);
 			var hour = date.hour;// time.substring(11, 13);
-
-			if(lang!='en'){
-				//console.log(lang);
-			}
 
 			if(langCodes.indexOf(lang) == -1){
 				langCodes.push(lang);
@@ -155,10 +153,6 @@ function updateHeatMapData(paramDay,paramHour,paramLang){
 		var day = element.day;
 		var point = element.position;
 
-		if(!getBounds().contains(point)){
-			continue;
-		}
-
 		if(paramDay){
 			if(paramDay != day){
 				continue;
@@ -175,6 +169,10 @@ function updateHeatMapData(paramDay,paramHour,paramLang){
 			if(paramLang != element.lang){
 				continue;
 			}
+		}
+
+		if(!getBounds().contains(point)){
+			continue;
 		}
 
 		addFrequency(element);
@@ -230,7 +228,12 @@ function updateTweetsText(tweetsIds){
 		$.getJSON(requestUrl+'/'+tweetsIds[i], 
 		function(data) {
 			if($('.tweets .list-group-item[tweetid="'+data.id+'"]').length == 0){
-				$('.tweets').append('<li style="font-size:11px;" class="list-group-item" tweetid="'+data.id+'"><span class="label label-default">'+data.created_at+'</span>&nbsp;&nbsp;'+data.text+'</li>');
+				var li = $('<li data-toggle="tooltip" title="'+data.user.screen_name+'" style="font-size:11px;" class="list-group-item" tweetid="'+data.id+'"><span class="label label-default">'+data.created_at+'</span>&nbsp;&nbsp;'+data.text+'</li>').appendTo('.tweets');
+				li.tooltip({});
+				li.click(function(event){
+					window.open('http://twitter.com/'+data.user.screen_name, '_blank');
+					event.preventDefault();
+				});
 			}
 		});
 	};

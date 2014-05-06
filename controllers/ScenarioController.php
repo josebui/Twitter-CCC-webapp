@@ -38,17 +38,26 @@ class ScenarioController extends Controller
 
         $url = null;
         $initialBounds = null;
+        $customData = array();
         switch (strtolower($city)) {
             case 'melbourne':
                 $url = 'http://115.146.94.20:5984/geomelbourne';
                 $initialBounds = "144.3945,-38.2607,145.7647,-37.4598";
+                $customData[] = 'footy';
             break;
+            case 'philadelphia':
+                $url = 'http://115.146.94.20:5984/geophiladelphia';
+                $initialBounds = "-75.280303,39.867004,-74.955763,40.137992";
+                $customData[] = 'nba';
+            break;
+            
         }
 
         return $this->render('map',array(
             'city'=>$city,
             'url'=>$url,
-            'initialBounds' => $initialBounds
+            'initialBounds' => $initialBounds,
+            'customData'=>$customData
         ));
     }
 
