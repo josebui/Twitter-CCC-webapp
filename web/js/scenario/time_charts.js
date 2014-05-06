@@ -5,7 +5,7 @@ google.setOnLoadCallback(getData);
 
 
 function getData(){
-    $.getJSON('http://115.146.94.20:5984/geomelbourne/_design/time/_view/all?group_level=1', 
+    $.getJSON(requestUrl+'/_design/time/_view/hours?group_level=1', 
         function(data) {
             drawTable(data);
         });
@@ -20,7 +20,7 @@ function drawTable(data){
 
     for(var i=0;i<data.rows.length; i++){
         table.addRow();
-        table.setValue(i,0, data.rows[i].key[0]);
+        table.setValue(i,0, data.rows[i].key);
         table.setValue(i,1, data.rows[i].value);
     }
   

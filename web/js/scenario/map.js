@@ -1,3 +1,4 @@
+google.load("visualization", "1.1", {packages:["corechart"]});
 
 var completeData = null;
 var map = null;
@@ -7,8 +8,12 @@ var hour = null;
 var lang = null;
 var boundsRec = null;
 var type = "happy";
-var bounds = "144.3945,-38.2607,145.7647,-37.4598";
 var langCodes = [];
+
+// Charts
+var dayFrequencies = [];
+var hourFrequencies = [];
+var langFrequencies = [];
 
 function loadData(type,bounds){
 
@@ -23,7 +28,7 @@ function loadData(type,bounds){
 	$('.type button[value="'+type+'"]').addClass('btn-success');
 
 	// Load
-	$.getJSON('http://115.146.94.20:5984/geomelbourne/_design/geo/_spatial/'+type+'?bbox='+bounds, 
+	$.getJSON(requestUrl+'/_design/geo/_spatial/'+type+'?bbox='+bounds, 
 	function(data) {
 		$('.loader').hide();
 
@@ -143,13 +148,14 @@ function updateHeatMapData(paramDay,paramHour,paramLang){
 	if(!completeData){
 		return null;
 	}
+	clearFrequencies();
 	for (var i = completeData.length - 1; i >= 0; i--) {
 		var element = completeData[i];
 		var hour = element.hour;
 		var day = element.day;
 		var point = element.position;
 
-		if(boundsRec && !boundsRec.getBounds().contains(point)){
+		if(!getBounds().contains(point)){
 			continue;
 		}
 
@@ -170,6 +176,8 @@ function updateHeatMapData(paramDay,paramHour,paramLang){
 				continue;
 			}
 		}
+
+		addFrequency(element);
 
 		heatMapData.points.push(point);
 		heatMapData.ids.push(element.id)
@@ -209,6 +217,8 @@ function updateHeatMapData(paramDay,paramHour,paramLang){
 		// heatMapData['byDayTime'][day][hour].ids.push(element.id);
 	};
 
+	drawCharts();
+
 	return heatMapData;
 }
 
@@ -217,7 +227,7 @@ function updateTweetsText(tweetsIds){
 	$('.tweets').html('');
 	var len = ((tweetsIds.length-1) > 10)?10:(tweetsIds.length-1);
 	for (var i = len; i >= 0; i--) {
-		$.getJSON('http://115.146.94.20:5984/geomelbourne/'+tweetsIds[i], 
+		$.getJSON(requestUrl+'/'+tweetsIds[i], 
 		function(data) {
 			if($('.tweets .list-group-item[tweetid="'+data.id+'"]').length == 0){
 				$('.tweets').append('<li style="font-size:11px;" class="list-group-item" tweetid="'+data.id+'"><span class="label label-default">'+data.created_at+'</span>&nbsp;&nbsp;'+data.text+'</li>');
@@ -227,10 +237,19 @@ function updateTweetsText(tweetsIds){
 	
 }
 
+function getBounds(){
+	if(boundsRec){
+		return boundsRec.getBounds();
+	}else{
+		return map.getBounds();
+	}
+}
+
 function addSelectionRectangle(){
+	var mapBounds = map.getBounds();
 	var bounds = new google.maps.LatLngBounds(
-      new google.maps.LatLng(-38.2607,144.3945),
-      new google.maps.LatLng(-37.4598,145.7647)
+      new google.maps.LatLng(mapBounds.getSouthWest().lat(),mapBounds.getSouthWest().lng()),
+      new google.maps.LatLng(mapBounds.getNorthEast().lat(),mapBounds.getNorthEast().lng())
   );
 
   // Define the rectangle and set its editable property to true.
@@ -243,6 +262,15 @@ function addSelectionRectangle(){
 
   boundsRec.setMap(map);
   google.maps.event.addListener(boundsRec, 'bounds_changed', updateBounds);
+  updateBounds();
+}
+
+function removeSelectionRectangle(){
+	if(boundsRec){
+		boundsRec.setMap(null);
+		boundsRec = null;
+		updateBounds();
+	}
 }
 
 function updateBounds(){
@@ -257,9 +285,9 @@ function getTypesCount(){
 	var ne = boundsRec.getBounds().getNorthEast();
  	var sw = boundsRec.getBounds().getSouthWest();
  	var bounds =sw.lng()+','+sw.lat()+','+ne.lng()+','+ne.lat();
-	$.getJSON('http://115.146.94.20:5984/geomelbourne/_design/geo/_spatial/happy?bbox='+bounds+'&count=true', 
+	$.getJSON(requestUrl+'/_design/geo/_spatial/happy?bbox='+bounds+'&count=true', 
 	function(dataHappy) {
-		$.getJSON('http://115.146.94.20:5984/geomelbourne/_design/geo/_spatial/sad?bbox='+bounds+'&count=true', 
+		$.getJSON(requestUrl+'/_design/geo/_spatial/sad?bbox='+bounds+'&count=true', 
 		function(dataSad) {
 			drawTable(dataHappy,dataSad);
 		});
@@ -267,33 +295,79 @@ function getTypesCount(){
 	});
 }
 
-function drawTable(dataHappy,dataSad){
+function clearFrequencies(){
+	hourFrequencies = [];
+	// for (var i = 1; i < 23; i++) {
+	// 	hourFrequencies[(i<10)?("0"+i.toString()):(i.toString())] = 0;
+	// };
+	
+	dayFrequencies = [];
+	var day = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+	for (index = 0; index < day.length; ++index) {
+	    dayFrequencies[day[index]] = 0;
+	}
+
+	langFrequencies = [];
+}
+
+function addFrequency(element){
+	if(!dayFrequencies[element.day]){
+		dayFrequencies[element.day] = 0;
+	}
+	dayFrequencies[element.day]++;
+
+	var hour = parseInt(element.hour);
+	if(!hourFrequencies[hour]){
+		hourFrequencies[hour] = 0;
+	}
+	hourFrequencies[hour]++;
+
+	if(!langFrequencies[element.lang]){
+		langFrequencies[element.lang] = 0;
+	}
+	langFrequencies[element.lang]++;
+}
+
+function drawCharts(){
+	drawTable(dayFrequencies,"Tweets by day","day-chart");
+	drawTable(hourFrequencies,"Tweets by hour","hour-chart");
+	drawTable(langFrequencies,"Tweets by lang","lang-chart");
+}
+
+function drawTable(frequencies,title,divId){
 	var table = new google.visualization.DataTable();
     
-    table.addColumn('string', 'Mood');
+    table.addColumn('string', title);
     table.addColumn('number', 'Tweets');
 
-    // for(var i=0;i<data.rows.length; i++){
-        table.addRow();
-        table.setValue(0,0, 'positive');
-        table.setValue(0,1, dataHappy.count);
+    var cont = 0;
+    for (key in frequencies) {
+    	table.addRow();
+        table.setValue(cont,0, key);
+        table.setValue(cont++,1, frequencies[key]);
+    }
 
-        table.addRow();
-        table.setValue(1,0, 'negative');
-        table.setValue(1,1, dataSad.count);
+    // for(var i=0;i<data.rows.length; i++){
+        // table.addRow();
+        // table.setValue(0,0, 'positive');
+        // table.setValue(0,1, dataHappy.count);
+
+        // table.addRow();
+        // table.setValue(1,0, 'negative');
+        // table.setValue(1,1, dataSad.count);
     // }
   
     var options = {
       title: '',
-      hAxis: {title: 'Mood'},
-      width: '90%', 
+      hAxis: {title: title},
+      width: '98%', 
       height: 500,
       vAxis: {maxValue: 2}
      
     };
 
 
-  	var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+  	var chart = new google.visualization.ColumnChart(document.getElementById(divId));
   	chart.draw(table,options);
 } 
 
@@ -358,6 +432,8 @@ $(document).ready(function(){
 
 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
+	google.maps.event.addListener(map, 'bounds_changed', updateBounds);
+
 	loadData(type,bounds);
 
 	$('.hour').click(function(){
@@ -382,6 +458,15 @@ $(document).ready(function(){
 		event.preventDefault();
 	});
 
-	addSelectionRectangle();
-
+	$('button.bounds-box').click(function(event){
+		var label = $(this).text();
+		if(label == 'Hide bounds box'){
+			removeSelectionRectangle();
+			$(this).text('Show bounds box');
+		}else{
+			addSelectionRectangle();	
+			$(this).text('Hide bounds box');
+		}
+		event.preventDefault();
+	});
 });
