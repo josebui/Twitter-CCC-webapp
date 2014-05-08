@@ -30,7 +30,8 @@ function loadData(type,bounds){
 	langCodes = [];
 
 	// Load
-	$.getJSON(requestUrl+'/_design/geo/_spatial/'+type+'?bbox='+bounds, 
+	// $.getJSON(requestUrl+'/_design/geo/_spatial/'+type+'?bbox='+bounds, 
+	$.getJSON(requestUrl+'/_design/geo/_view/mood?key="'+type+'"', 
 	function(data) {
 		$('.loader').hide();
 
@@ -47,7 +48,7 @@ function loadData(type,bounds){
 				langCodes.push(lang);
 			}
 			
-			var point = new google.maps.LatLng(data.rows[i].geometry.coordinates[1], data.rows[i].geometry.coordinates[0]);
+			var point = new google.maps.LatLng(data.rows[i].value[2].coordinates[1], data.rows[i].value[2].coordinates[0]);
 
 			completeData.push({
 				day: day,
@@ -430,9 +431,11 @@ function changeOpacity() {
 
 $(document).ready(function(){
 
+
+
 	var mapOptions = {
 		zoom: 9,
-	    center: new google.maps.LatLng(-37.793472,144.995804),
+	    center: new google.maps.LatLng(mapCenter[0],mapCenter[1]),
 	    mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 

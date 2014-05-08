@@ -43,12 +43,16 @@ class ScenarioController extends Controller
             case 'melbourne':
                 $url = 'http://115.146.94.20:5984/geomelbourne';
                 $initialBounds = "144.3945,-38.2607,145.7647,-37.4598";
+                $mapCenter = "-37.793472,144.995804";
                 $customData[] = 'footy';
             break;
             case 'philadelphia':
                 $url = 'http://115.146.94.20:5984/geophiladelphia';
                 $initialBounds = "-75.280303,39.867004,-74.955763,40.137992";
+                $mapCenter = "39.9541995,-75.1638478,18";
                 $customData[] = 'nba';
+                // file_get_contents("http://115.146.94.20:5984/geophiladelphia/_design/geo/_view/mood?key=\"all\"");
+                // return "hola";
             break;
             
         }
@@ -57,7 +61,8 @@ class ScenarioController extends Controller
             'city'=>$city,
             'url'=>$url,
             'initialBounds' => $initialBounds,
-            'customData'=>$customData
+            'customData'=>$customData,
+            'mapCenter'=>$mapCenter
         ));
     }
 

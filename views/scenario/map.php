@@ -1,6 +1,8 @@
     <script type="text/javascript">
       var requestUrl = "<?php echo $url; ?>";
       var bounds = "<?php echo $initialBounds; ?>";
+      var city = "<?php echo $city; ?>";
+      var mapCenter = [<?php echo $mapCenter; ?>];
       $(document).ready(function(){
         $('.charts-tabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
           drawCharts();
@@ -12,8 +14,8 @@
   <div class="panel-body">
     <span class="label label-default">Data:</span>
     <div class="btn-group type">
-      <button type="button" class="btn btn-default" value="happy">Happy</button>
-      <button type="button" class="btn btn-default" value="sad">Sad</button>
+      <button type="button" class="btn btn-default" value="positive">Happy</button>
+      <button type="button" class="btn btn-default" value="negative">Sad</button>
       <?php foreach ($customData as $key => $value) { ?>
         <button type="button" class="btn btn-default" value="<?php echo $value; ?>"><?php echo ucfirst($value); ?></button>  
       <?php } ?>
