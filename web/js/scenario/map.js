@@ -8,32 +8,32 @@ var hour = null;
 var lang = null;
 var boundsRec = null;
 var type = "happy";
+var mood = [-100,100];
 var langCodes = [];
 
 // Charts
 var dayFrequencies = [];
 var hourFrequencies = [];
 var langFrequencies = [];
+var moodFrequencies = [];
 
-function loadData(type,bounds){
+function loadData(url,bounds,onSucess){
 
 	// Set ui
-	$('.hour, .day, .lang').removeClass('btn-success');
+	$('.hour, .day, .lang, .type button, .type a').removeClass('btn-success');
 
 	removeHeatMap();
 
 	$('.loader').show();
 
-	$('.type button').removeClass('btn-success');
-	$('.type button[value="'+type+'"]').addClass('btn-success');
-
 	langCodes = [];
 
 	// Load
 	// $.getJSON(requestUrl+'/_design/geo/_spatial/'+type+'?bbox='+bounds, 
-	$.getJSON(requestUrl+'/_design/geo/_view/mood?key="'+type+'"', 
+	$.getJSON(url, 
 	function(data) {
 		$('.loader').hide();
+		onSucess(data);
 
 		completeData = [];
 		for (var i=0;i<data.rows.length;i++)
@@ -43,6 +43,7 @@ function loadData(type,bounds){
 			var date = parseDate(time,10);
 			var day = date.day; //time.substring(0, 3);
 			var hour = date.hour;// time.substring(11, 13);
+			var mood = (data.rows[i].value[3])?data.rows[i].value[3]:0;
 
 			if(langCodes.indexOf(lang) == -1){
 				langCodes.push(lang);
@@ -55,7 +56,8 @@ function loadData(type,bounds){
 				hour: hour,
 				position: point,
 				id: data.rows[i].id,
-				lang: lang
+				lang: lang,
+				mood: parseFloat(mood)
 			});
 
 		}
@@ -88,27 +90,14 @@ function removeHeatMap(){
 
 function addHeatMap(){
 	removeHeatMap();
-	$('.hour, .day, .lang').removeClass('btn-success');
+	$('.hour, .day, .lang, .mood').removeClass('btn-success');
 
-	var heatMapData = updateHeatMapData(day,hour,lang);
+	var heatMapData = updateHeatMapData(day,hour,lang,mood);
 	if(!heatMapData){
 		return;
 	}
 
 	var pointArray = null;
-	// var selectedData = null;
-	// if(day && hour && heatMapData['byDayTime'][day] && heatMapData['byDayTime'][day][hour] ){
-	// 	selectedData = heatMapData['byDayTime'][day][hour];
-	// 	// pointArray = new google.maps.MVCArray(heatMapData['byDayTime'][day][hour].points);
-	// }else if(hour && heatMapData['byTime'][hour]){
-	// 	selectedData = heatMapData['byTime'][hour];
-	// 	// pointArray = new google.maps.MVCArray(heatMapData['byTime'][hour].pointd);
-	// }else if(day && heatMapData['byDay'][day]){
-	// 	selectedData = heatMapData['byDay'][day];
-	// 	// pointArray = new google.maps.MVCArray(heatMapData['byDay'][day].points);
-	// }else{
-	// 	return;
-	// }
 
 	pointArray = new google.maps.MVCArray(heatMapData.points);
 
@@ -120,6 +109,9 @@ function addHeatMap(){
 	}
 	if(lang){
 		$('.lang[value="'+lang+'"]').addClass('btn-success');	
+	}
+	if(mood){
+		$('.mood[value="'+mood[0]+'|'+mood[1]+'"]').addClass('btn-success');	
 	}
 
 	heatMap = new google.maps.visualization.HeatmapLayer({
@@ -133,12 +125,7 @@ function addHeatMap(){
 	updateTweetsText(heatMapData.ids);
 }
 
-function updateHeatMapData(paramDay,paramHour,paramLang){
-	// var heatMapData = {
-	// 	'byDay': [],
-	// 	'byTime': [],
-	// 	'byDayTime':[]
-	// };
+function updateHeatMapData(paramDay,paramHour,paramLang,paramMood){
 
 	var heatMapData = {
 		points:[],
@@ -172,6 +159,12 @@ function updateHeatMapData(paramDay,paramHour,paramLang){
 			}
 		}
 
+		if(paramMood){
+			if(element.mood < paramMood[0] || element.mood > paramMood[1]){
+				continue;
+			}
+		}
+
 		if(!getBounds().contains(point)){
 			continue;
 		}
@@ -180,40 +173,6 @@ function updateHeatMapData(paramDay,paramHour,paramLang){
 
 		heatMapData.points.push(point);
 		heatMapData.ids.push(element.id)
-
-		// if(!heatMapData['byTime'][hour]){
-		// 	heatMapData['byTime'][hour] = {
-		// 		points:[],
-		// 		ids:[]
-		// 	};
-		// }
-		// heatMapData['byTime'][hour].points.push(point);
-		// heatMapData['byTime'][hour].ids.push(element.id);
-
-		// if(!heatMapData['byDay'][day]){
-		// 	heatMapData['byDay'][day] = {
-		// 		points:[],
-		// 		ids:[]
-		// 	};
-		// }
-		// heatMapData['byDay'][day].points.push(point);
-		// heatMapData['byDay'][day].ids.push(element.id);
-
-		// if(!heatMapData['byDayTime'][day]){
-		// 	heatMapData['byDayTime'][day] = {
-		// 		points:[],
-		// 		ids:[]
-		// 	};
-		// }
-
-		// if(!heatMapData['byDayTime'][day][hour]){
-		// 	heatMapData['byDayTime'][day][hour] = {
-		// 		points:[],
-		// 		ids:[]
-		// 	};
-		// }
-		// heatMapData['byDayTime'][day][hour].points.push(point);
-		// heatMapData['byDayTime'][day][hour].ids.push(element.id);
 	};
 
 	drawCharts();
@@ -312,6 +271,13 @@ function clearFrequencies(){
 	}
 
 	langFrequencies = [];
+
+	moodFrequencies = [];
+	var moodRanges = ["-100,-50","-50,0","0,0","0,50","50,100"];
+	for (index = 0; index < moodRanges.length; ++index) {
+	    moodFrequencies[moodRanges[index]] = 0;
+	}
+	
 }
 
 function addFrequency(element){
@@ -330,12 +296,34 @@ function addFrequency(element){
 		langFrequencies[element.lang] = 0;
 	}
 	langFrequencies[element.lang]++;
+
+	if(!moodFrequencies[classifyMood(element.mood)]){
+		moodFrequencies[classifyMood(element.mood)] = 0;
+	}
+	moodFrequencies[classifyMood(element.mood)]++;
+}
+
+function classifyMood(mood){
+	var ranges = {
+		"-100,-50":[-100,-50],
+		"-50,0":[-50,-0.00001],
+		"0,0":[0,0],
+		"0,50":[0.00001,50],
+		"50,100":[50,100]
+	};
+	for (range in ranges) {
+		if(mood >= ranges[range][0] && mood <= ranges[range][1] ){
+			return range;
+		}
+	}
+	return "no-range";
 }
 
 function drawCharts(){
 	drawTable(dayFrequencies,"Tweets by day","day-chart");
 	drawTable(hourFrequencies,"Tweets by hour","hour-chart");
 	drawTable(langFrequencies,"Tweets by lang","lang-chart");
+	drawTable(moodFrequencies,"Tweets by mood","mood-chart");
 }
 
 function drawTable(frequencies,title,divId){
@@ -443,7 +431,9 @@ $(document).ready(function(){
 
 	google.maps.event.addListener(map, 'bounds_changed', updateBounds);
 
-	loadData(type,bounds);
+	loadData(requestUrl+'/_design/geo/_view/mood?key="'+type+'"',bounds,function(data){
+		$('.type button[value="'+type+'"]').addClass('btn-success');
+	});
 
 	$('.hour').click(function(){
 		hour = $(this).attr("value");
@@ -461,9 +451,38 @@ $(document).ready(function(){
 		addHeatMap();
 	});
 
-	$('.type button').click(function(event){
+	$('.mood').click(function(){
+		mood = $(this).attr("value");
+		if(mood == 'none'){
+			mood = null;
+		}else{
+			mood = mood.split("|");
+			mood = [parseFloat(mood[0]),parseFloat(mood[1])];
+		}
+		addHeatMap();
+	});
+
+	$('.type button, .type a').click(function(event){
+		var button = $(this);
 		type= $(this).attr('value');
-		loadData(type,bounds);
+		if($(this).hasClass("footy")){
+			if (typeof type == 'undefined' || type == false) return;
+			button.removeClass('btn-success');
+			var url = requestUrl+'/_design/geo/_view/footy?startkey=["footy","'+type+'"]&endkey=["footy","'+type+'"]'; 
+			if(type == 'all'){
+				url = requestUrl+'/_design/geo/_view/footy'; 
+			}
+
+			loadData(url,bounds,function(data){
+				button.addClass('btn-success');
+			});	
+		}else{
+			button.removeClass('btn-success');
+			loadData(requestUrl+'/_design/geo/_view/mood?key="'+type+'"',bounds,function(data){
+				button.addClass('btn-success');
+			});	
+		}
+		
 		event.preventDefault();
 	});
 

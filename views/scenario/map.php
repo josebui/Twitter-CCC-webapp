@@ -14,12 +14,24 @@
   <div class="panel-body">
     <span class="label label-default">Data:</span>
     <div class="btn-group type">
+      <?php if($city == 'melbourne'){ ?>
+      <button type="button" class="btn btn-default dropdown-toggle footy" data-toggle="dropdown">Footy <span class="caret"></span></button>
+      <?php } ?> 
       <button type="button" class="btn btn-default" value="positive">Happy</button>
       <button type="button" class="btn btn-default" value="negative">Sad</button>
       <?php foreach ($customData as $key => $value) { ?>
         <button type="button" class="btn btn-default" value="<?php echo $value; ?>"><?php echo ucfirst($value); ?></button>  
       <?php } ?>
       <button type="button" class="btn btn-default" value="all">All</button>
+      <ul class="dropdown-menu" role="menu">
+        <li><a href="#" class="footy" value="all">All</a></li>
+        <li><a href="#" class="footy" value="collingwood">Collingwood</a></li>
+        <li><a href="#" class="footy" value="carlton">Carlton</a></li>
+        <li><a href="#" class="footy" value="melbourne">Melbourne FC</a></li>
+        <li><a href="#" class="footy" value="geelong">Geelong cats</a></li>
+        <li><a href="#" class="footy" value="richmond">Richmond</a></li>
+        <li><a href="#" class="footy" value="essendon">Essendon</a></li>
+      </ul>
     </div>
     <span class="label label-info loader">Loading...</span>
     <br/><br/>
@@ -45,6 +57,16 @@
     <span class="label label-default">By lang:</span>
     <div class="btn-group lang-list">
       <button type="button" class="lang none btn btn-default" value="none">None</button>
+    </div><br/><br/>
+
+    <span class="label label-default">By mood:</span>
+    <div class="btn-group">
+      <button type="button" class="mood none btn btn-default" value="none">None</button>
+      <button type="button" class="mood btn btn-default" value="-100|-50">Sad [-100,-50]</button>
+      <button type="button" class="mood btn btn-default" value="-50|-0.0001">[-50,0]</button>
+      <button type="button" class="mood btn btn-default" value="0|0">[0,0]</button>
+      <button type="button" class="mood btn btn-default" value="0.00001|50">[0,50]</button>
+      <button type="button" class="mood btn btn-default" value="50|100">Happy [50,100]</button>
     </div>
   </div>
 </div>
@@ -76,6 +98,7 @@
         <li class="active"><a href="#day-tab" data-toggle="tab">Day frequencies</a></li>
         <li><a href="#hour-tab" data-toggle="tab">Hour frequencies</a></li>
         <li><a href="#lang-tab" data-toggle="tab">Lang frequencies</a></li>
+        <li><a href="#mood-tab" data-toggle="tab">Mood frequencies</a></li>
       </ul>
 
       <!-- Tab panes -->
@@ -93,6 +116,9 @@
             </label>
           </div>
           <div id="lang-chart" ></div>
+        </div>
+        <div class="tab-pane" id="mood-tab">
+          <div id="mood-chart" ></div>
         </div>
       </div>  
   </div>
