@@ -40,7 +40,15 @@ function loadData(url,bounds,onSucess){
 		{	 
 			var time = data.rows[i].value[0];
 			var lang = data.rows[i].value[1];
-			var date = parseDate(time,10);
+
+			var timeChange = 0;
+			if(city == 'melbourne'){
+				timeChange = 10;
+			}else if(city == 'philadelphia'){
+				timeChange = -4;
+			}
+
+			var date = parseDate(time,timeChange);
 			var day = date.day; //time.substring(0, 3);
 			var hour = date.hour;// time.substring(11, 13);
 			var mood = (data.rows[i].value[3])?data.rows[i].value[3]:0;

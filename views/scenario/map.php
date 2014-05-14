@@ -35,10 +35,10 @@
         </ul>
       <?php }else if($city == 'philadelphia'){ ?> 
         <ul class="dropdown-menu" role="menu">
-          <li><a href="#" class="footy" value="all">All</a></li>
-          <li><a href="#" class="footy" value="nba">NBA</a></li>
-          <li><a href="#" class="footy" value="nfl">NFL</a></li>
-          <li><a href="#" class="footy" value="mlb">Baseball</a></li>
+          <li><a href="#" class="sports" value="all">All</a></li>
+          <li><a href="#" class="sports" value="nba">NBA</a></li>
+          <li><a href="#" class="sports" value="nfl">NFL</a></li>
+          <li><a href="#" class="sports" value="mlb">Baseball</a></li>
         </ul>
       <?php } ?>
 
