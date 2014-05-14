@@ -431,9 +431,9 @@ $(document).ready(function(){
 
 	google.maps.event.addListener(map, 'bounds_changed', updateBounds);
 
-	loadData(requestUrl+'/_design/geo/_view/mood?key="'+type+'"',bounds,function(data){
-		$('.type button[value="'+type+'"]').addClass('btn-success');
-	});
+	// loadData(requestUrl+'/_design/geo/_view/mood?key="'+type+'"',bounds,function(data){
+	// 	$('.type button[value="'+type+'"]').addClass('btn-success');
+	// });
 
 	$('.hour').click(function(){
 		hour = $(this).attr("value");
@@ -476,6 +476,25 @@ $(document).ready(function(){
 			loadData(url,bounds,function(data){
 				button.addClass('btn-success');
 			});	
+		}else if($(this).hasClass("sports")){
+			if (typeof type == 'undefined' || type == false) return;
+			button.removeClass('btn-success');
+			var url = requestUrl+'/_design/geo/_view/sports?startkey=["sport","'+type+'"]&endkey=["sport","'+type+'"]'; 
+			if(type == 'all'){
+				url = requestUrl+'/_design/geo/_view/sports'; 
+			}
+
+			loadData(url,bounds,function(data){
+				button.addClass('btn-success');
+			});	
+		}else if($(this).hasClass("rocky")){
+			if (typeof type == 'undefined' || type == false) return;
+			button.removeClass('btn-success');
+			var url = requestUrl+'/_design/geo/_view/sports?startkey=["movie","'+type+'"]&endkey=["movie","'+type+'"]'; 
+
+			loadData(url,bounds,function(data){
+				button.addClass('btn-success');
+			});
 		}else{
 			button.removeClass('btn-success');
 			loadData(requestUrl+'/_design/geo/_view/mood?key="'+type+'"',bounds,function(data){

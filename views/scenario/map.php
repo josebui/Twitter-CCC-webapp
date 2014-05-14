@@ -15,25 +15,35 @@
     <span class="label label-default">Data:</span>
     <div class="btn-group type">
       <?php if($city == 'melbourne'){ ?>
-      <button type="button" class="btn btn-default dropdown-toggle footy" data-toggle="dropdown">Footy <span class="caret"></span></button>
-      <?php } ?> 
+        <button type="button" class="btn btn-default dropdown-toggle footy" data-toggle="dropdown">Footy<span class="caret"></span></button>
+      <?php }else if($city == 'philadelphia'){ ?> 
+        <button type="button" class="btn btn-default dropdown-toggle sports" data-toggle="dropdown">Sports<span class="caret"></span></button>
+        <button type="button" class="btn btn-default rocky" value="rocky">Rocky</button>
+      <?php } ?>
       <button type="button" class="btn btn-default" value="positive">Happy</button>
       <button type="button" class="btn btn-default" value="negative">Sad</button>
-      <?php foreach ($customData as $key => $value) { ?>
-        <button type="button" class="btn btn-default" value="<?php echo $value; ?>"><?php echo ucfirst($value); ?></button>  
-      <?php } ?>
       <button type="button" class="btn btn-default" value="all">All</button>
-      <ul class="dropdown-menu" role="menu">
-        <li><a href="#" class="footy" value="all">All</a></li>
-        <li><a href="#" class="footy" value="collingwood">Collingwood</a></li>
-        <li><a href="#" class="footy" value="carlton">Carlton</a></li>
-        <li><a href="#" class="footy" value="melbourne">Melbourne FC</a></li>
-        <li><a href="#" class="footy" value="geelong">Geelong cats</a></li>
-        <li><a href="#" class="footy" value="richmond">Richmond</a></li>
-        <li><a href="#" class="footy" value="essendon">Essendon</a></li>
-      </ul>
+      <?php if($city == 'melbourne'){ ?>
+        <ul class="dropdown-menu" role="menu">
+          <li><a href="#" class="footy" value="all">All</a></li>
+          <li><a href="#" class="footy" value="collingwood">Collingwood</a></li>
+          <li><a href="#" class="footy" value="carlton">Carlton</a></li>
+          <li><a href="#" class="footy" value="melbourne">Melbourne FC</a></li>
+          <li><a href="#" class="footy" value="geelong">Geelong cats</a></li>
+          <li><a href="#" class="footy" value="richmond">Richmond</a></li>
+          <li><a href="#" class="footy" value="essendon">Essendon</a></li>
+        </ul>
+      <?php }else if($city == 'philadelphia'){ ?> 
+        <ul class="dropdown-menu" role="menu">
+          <li><a href="#" class="footy" value="all">All</a></li>
+          <li><a href="#" class="footy" value="nba">NBA</a></li>
+          <li><a href="#" class="footy" value="nfl">NFL</a></li>
+          <li><a href="#" class="footy" value="mlb">Baseball</a></li>
+        </ul>
+      <?php } ?>
+
     </div>
-    <span class="label label-info loader">Loading...</span>
+    <span class="label label-info loader" style="display:none;">Loading...</span>
     <br/><br/>
     <span class="label label-default">By time:</span>
     <div class="btn-group">
