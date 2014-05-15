@@ -38,16 +38,20 @@ AppAsset::register($this);
                     ['label' => 'Home', 'url' => ['/site/index']],
                     ['label' => 'About', 'url' => ['/site/about']],
                     // ['label' => 'About', 'url' => ['/site/about']],
-                    ['label' => 'Melbourne Scenarios', 'items' => [
-                        ['label'=> 'Heat map', 'url' =>['/scenario/map?city=melbourne']],
-                        ['label'=> 'Mood by location', 'url' =>['/scenario/mood-location?city=melbourne']],
-                        ['label'=> 'Time charts', 'url' =>['/scenario/time-charts?city=melbourne']],
-                    ]],
-                    ['label' => 'Philadelphia Scenarios', 'items' => [
-                        ['label'=> 'Heat map', 'url' =>['/scenario/map?city=philadelphia']],
-                        ['label'=> 'Mood by location', 'url' =>['/scenario/mood-location?city=philadelphia']],
-                        ['label'=> 'Time charts', 'url' =>['/scenario/time-charts?city=philadelphia']],
-                    ]],
+                    ['label' => 'Melbourne', 'url' => ['/scenario/map?city=melbourne']
+                    //     , 'items' => [
+                    //     ['label'=> 'Heat map', 'url' =>['/scenario/map?city=melbourne']],
+                    //     ['label'=> 'Mood by location', 'url' =>['/scenario/mood-location?city=melbourne']],
+                    //     ['label'=> 'Time charts', 'url' =>['/scenario/time-charts?city=melbourne']],
+                    // ]
+                    ],
+                    ['label' => 'Philadelphia', 'url'=> ['/scenario/map?city=philadelphia']
+                    // , 'items' => [
+                    //     ['label'=> 'Heat map', 'url' =>['/scenario/map?city=philadelphia']],
+                    //     ['label'=> 'Mood by location', 'url' =>['/scenario/mood-location?city=philadelphia']],
+                    //     ['label'=> 'Time charts', 'url' =>['/scenario/time-charts?city=philadelphia']],
+                    // ]
+                    ],
                     // Yii::$app->user->isGuest ?
                     //     ['label' => 'Login', 'url' => ['/site/login']] :
                     //     ['label' => 'Logout (' . Yii::$app->user->identity->username . ')',
