@@ -17,16 +17,18 @@ $this->title = 'Twitter-CCC';
             <div class="col-lg-6">
                 <h2>Melbourne</h2>
                 <div>
-                    <img src="/web/img/melbourne.jpg" width="100%">
+                    <a href="/web/index.php/scenario/map?city=melbourne">
+                        <img src="/web/img/melbourne.jpg" width="100%">
+                    </a>
                 </div>
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
             </div>
             <div class="col-lg-6">
                 <h2>Philadelphia</h2>
                 <div>
-                    <img src="/web/img/philadelphia.jpg" width="100%">
+                    <a href="/web/index.php/scenario/map?city=melbourne">
+                        <img src="/web/img/philadelphia.jpg" width="100%">
+                    </a>
                 </div>
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
             </div>
         </div>
 
