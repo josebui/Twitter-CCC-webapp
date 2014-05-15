@@ -504,12 +504,7 @@ $(document).ready(function(){
 			});
 		}else if($(this).hasClass("popular")){
 			button.removeClass('btn-success');
-			var url = "";
-			if(city == 'melbourne'){
-				url = requestUrl+'/_design/geo/_view/popular?startkey=["location","'+type+'"]&endkey=[{},"'+type+'"]'; 
-			}else{
-				url = requestUrl+'/_design/geo/_view/popular?startkey=["location","'+type+'"]&endkey=["location","'+type+'"]'; 
-			}
+			var url = requestUrl+'/_design/geo/_view/popular?startkey=["locations","'+type+'"]&endkey=["locations","'+type+'"]'; 
 
 			loadData(url,bounds,function(data){
 				button.addClass('btn-success');
