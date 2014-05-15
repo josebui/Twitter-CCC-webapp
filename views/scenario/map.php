@@ -16,11 +16,9 @@
     <div class="btn-group type">
       <?php if($city == 'melbourne'){ ?>
         <button type="button" class="btn btn-default dropdown-toggle footy" data-toggle="dropdown">Footy<span class="caret"></span></button>
-        <button type="button" class="btn btn-default checkin" value="iamat">Check-in</button>
       <?php }else if($city == 'philadelphia'){ ?> 
         <button type="button" class="btn btn-default dropdown-toggle sports" data-toggle="dropdown">Sports<span class="caret"></span></button>
         <button type="button" class="btn btn-default rocky" value="rocky">Rocky</button>
-        <button type="button" class="btn btn-default checkin" value="iamat">Check-in</button>
       <?php } ?>
       <button type="button" class="btn btn-default popular" value="iamat">Check-in</button>
       <button type="button" class="btn btn-default popular" value="bar">Bars</button>
