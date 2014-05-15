@@ -508,7 +508,7 @@ $(document).ready(function(){
 			if(city == 'melbourne'){
 				url = requestUrl+'/_design/geo/_view/popular?startkey=["location","'+type+'"]&endkey=[{},"'+type+'"]'; 
 			}else{
-				url = requestUrl+'/_design/geo/_view/sports?startkey=["location","'+type+'"]&endkey=["location","'+type+'"]'; 
+				url = requestUrl+'/_design/geo/_view/popular?startkey=["location","'+type+'"]&endkey=["location","'+type+'"]'; 
 			}
 
 			loadData(url,bounds,function(data){
