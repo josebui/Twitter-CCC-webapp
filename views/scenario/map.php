@@ -105,7 +105,7 @@
   </div>
 </div>
 <div class="panel panel-default">
-  <div class="panel-heading">Charts</div>
+  <div class="panel-heading"><button type="button" class="btn-xs btn btn-default show-data pull-right">Show data</button>Charts</div>
   <div class="charts-tabs">
   <!-- Nav tabs -->
       <ul class="nav nav-tabs">

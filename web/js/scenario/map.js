@@ -1,4 +1,4 @@
-google.load("visualization", "1.1", {packages:["corechart"]});
+google.load("visualization", "1.1", {packages:["corechart","table"]});
 
 var completeData = null;
 var map = null;
@@ -350,16 +350,6 @@ function drawTable(frequencies,title,divId){
         table.setValue(cont++,1, frequencies[key]);
     }
 
-    // for(var i=0;i<data.rows.length; i++){
-        // table.addRow();
-        // table.setValue(0,0, 'positive');
-        // table.setValue(0,1, dataHappy.count);
-
-        // table.addRow();
-        // table.setValue(1,0, 'negative');
-        // table.setValue(1,1, dataSad.count);
-    // }
-  
     var options = {
       title: '',
       hAxis: {title: title},
@@ -369,8 +359,13 @@ function drawTable(frequencies,title,divId){
      
     };
 
-
-  	var chart = new google.visualization.ColumnChart(document.getElementById(divId));
+    var chart = null;
+    if($('button.show-data').text() == 'Show graphs'){
+  		chart = new google.visualization.Table(document.getElementById(divId));
+  	}else{
+  		chart = new google.visualization.ColumnChart(document.getElementById(divId));	
+  	}
+  	
   	chart.draw(table,options);
 } 
 
@@ -528,6 +523,17 @@ $(document).ready(function(){
 			addSelectionRectangle();	
 			$(this).text('Hide bounds box');
 		}
+		event.preventDefault();
+	});
+
+	$('button.show-data').click(function(event){
+		var label = $(this).text();
+		if(label == 'Show data'){
+			$(this).text('Show graphs');
+		}else{
+			$(this).text('Show data');
+		}
+		drawCharts();
 		event.preventDefault();
 	});
 
