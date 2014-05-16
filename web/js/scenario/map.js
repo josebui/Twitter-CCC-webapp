@@ -196,9 +196,12 @@ function updateTweetsText(tweetsIds){
 		$.getJSON(requestUrl+'/'+tweetsIds[i], 
 		function(data) {
 			if($('.tweets .list-group-item[tweetid="'+data.id+'"]').length == 0){
-				var li = $('<li data-toggle="tooltip" title="'+data.user.screen_name+'" style="font-size:11px;" class="list-group-item" tweetid="'+data.id+'"><span class="label label-default">'+data.created_at+'</span>&nbsp;&nbsp;'+data.text+'</li>').appendTo('.tweets');
+				var image = data.user.profile_image_url;
+				var li = $('<li data-toggle="tooltip" title="'+data.user.screen_name+'" style="font-size:11px;margin:0;" class="media list-group-item" tweetid="'+data.id+'"></li>').appendTo('.tweets');
+				li.append('<a class="pull-left pic" href="#"><img class="media-object" src="'+image+'" alt=""></a>');
+				li.append('<div class="media-body"><span class="label label-default">'+data.created_at+'</span>&nbsp;&nbsp;'+data.text+'</div>');
 				li.tooltip({});
-				li.click(function(event){
+				$('.pic',li).click(function(event){
 					window.open('http://twitter.com/'+data.user.screen_name, '_blank');
 					event.preventDefault();
 				});
