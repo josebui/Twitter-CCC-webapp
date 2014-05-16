@@ -109,10 +109,11 @@
   <div class="charts-tabs">
   <!-- Nav tabs -->
       <ul class="nav nav-tabs">
-        <li class="active"><a href="#day-tab" data-toggle="tab">Day frequencies</a></li>
-        <li><a href="#hour-tab" data-toggle="tab">Hour frequencies</a></li>
-        <li><a href="#lang-tab" data-toggle="tab">Lang frequencies</a></li>
-        <li><a href="#mood-tab" data-toggle="tab">Mood frequencies</a></li>
+        <li class="active"><a href="#day-tab" data-toggle="tab">By Day</a></li>
+        <li><a href="#hour-tab" data-toggle="tab">By Hour</a></li>
+        <li><a href="#lang-tab" data-toggle="tab">By Languages</a></li>
+        <li><a href="#mood-tab" data-toggle="tab">By Mood</a></li>
+        <li><a href="#mood-range-tab" data-toggle="tab">By Mood range</a></li>
       </ul>
 
       <!-- Tab panes -->
@@ -130,6 +131,9 @@
             </label>
           </div>
           <div id="lang-chart" ></div>
+        </div>
+        <div class="tab-pane" id="mood-range-tab">
+          <div id="mood-range-chart" ></div>
         </div>
         <div class="tab-pane" id="mood-tab">
           <div id="mood-chart" ></div>

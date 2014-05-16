@@ -328,13 +328,35 @@ function classifyMood(mood){
 }
 
 function drawCharts(){
-	drawTable(dayFrequencies,"Tweets by day","day-chart");
-	drawTable(hourFrequencies,"Tweets by hour","hour-chart");
-	drawTable(langFrequencies,"Tweets by lang","lang-chart");
-	drawTable(moodFrequencies,"Tweets by mood","mood-chart");
+	drawTable(dayFrequencies,"Tweets by day","day-chart","pie");
+	drawTable(hourFrequencies,"Tweets by hour","hour-chart","column");
+	drawTable(langFrequencies,"Tweets by lang","lang-chart","column");
+	drawTable(moodFrequencies,"Tweets by mood","mood-range-chart","column");
+
+	drawTable(compactMoodFrenquencies(moodFrequencies),"Tweets by mood","mood-chart","pie");
 }
 
-function drawTable(frequencies,title,divId){
+function compactMoodFrenquencies(moodFrequencies){
+	var moods = [];
+	moods['happy'] = 0;
+	moods['sad'] = 0;
+
+	for (range in moodFrequencies) {
+		switch(range){
+			case "-100,-50":
+			case "-50,0":
+				moods['sad']+=moodFrequencies[range];
+			break;
+			case "0,50":
+			case "50,100":
+				moods['happy']+=moodFrequencies[range];
+			break;
+		}
+	}
+	return moods;	
+}
+
+function drawTable(frequencies,title,divId,type){
 	var table = new google.visualization.DataTable();
     
     table.addColumn('string', title);
@@ -361,9 +383,19 @@ function drawTable(frequencies,title,divId){
 
     var chart = null;
     if($('button.show-data').text() == 'Show graphs'){
-  		chart = new google.visualization.Table(document.getElementById(divId));
-  	}else{
-  		chart = new google.visualization.ColumnChart(document.getElementById(divId));	
+  		type = 'data';
+  	}
+
+  	switch(type){
+  		case 'column':
+  			chart = new google.visualization.ColumnChart(document.getElementById(divId));
+  		break;
+  		case 'pie':
+  			chart = new google.visualization.PieChart(document.getElementById(divId));
+  		break;
+  		case 'data':
+  			chart = new google.visualization.Table(document.getElementById(divId));
+  		break;
   	}
   	
   	chart.draw(table,options);
