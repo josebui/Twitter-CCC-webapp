@@ -37,9 +37,9 @@ $config = [
             'enablePrettyUrl' => true,
             // 'enableStrictParsing' => true,
             // 'showScriptName' => false,
-            // 'rules' => [
-            //     ['class' => 'yii\rest\UrlRule', 'controller' => 'api'],
-            // ],
+            'rules' => [
+                'api/<city:\w+>/<type:\w+>/<polarity:\w*>' => 'api/list',
+            ],
         ]
     ],
     'params' => $params,
