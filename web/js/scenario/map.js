@@ -328,12 +328,17 @@ function classifyMood(mood){
 }
 
 function drawCharts(){
-	drawTable(dayFrequencies,"Tweets by day","day-chart","pie");
-	drawTable(hourFrequencies,"Tweets by hour","hour-chart","column");
-	drawTable(langFrequencies,"Tweets by lang","lang-chart","column");
-	drawTable(moodFrequencies,"Tweets by mood","mood-range-chart","column");
 
-	drawTable(compactMoodFrenquencies(moodFrequencies),"Tweets by mood","mood-chart","pie");
+	var graphType = $('button.graph-type[status=show]').attr('id');
+
+
+
+	drawTable(dayFrequencies,"Tweets by day","day-chart",graphType);
+	drawTable(hourFrequencies,"Tweets by hour","hour-chart",graphType);
+	drawTable(langFrequencies,"Tweets by lang","lang-chart",graphType);
+	drawTable(moodFrequencies,"Tweets by mood","mood-range-chart",graphType);
+
+	drawTable(compactMoodFrenquencies(moodFrequencies),"Tweets by mood","mood-chart",graphType);
 }
 
 function compactMoodFrenquencies(moodFrequencies){
@@ -382,18 +387,15 @@ function drawTable(frequencies,title,divId,type){
     };
 
     var chart = null;
-    if($('button.show-data').text() == 'Show graphs'){
-  		type = 'data';
-  	}
 
   	switch(type){
-  		case 'column':
+  		case 'column-chart':
   			chart = new google.visualization.ColumnChart(document.getElementById(divId));
   		break;
-  		case 'pie':
+  		case 'pie-chart':
   			chart = new google.visualization.PieChart(document.getElementById(divId));
   		break;
-  		case 'data':
+  		case 'data-table':
   			chart = new google.visualization.Table(document.getElementById(divId));
   		break;
   	}
@@ -558,15 +560,26 @@ $(document).ready(function(){
 		event.preventDefault();
 	});
 
-	$('button.show-data').click(function(event){
-		var label = $(this).text();
-		if(label == 'Show data'){
-			$(this).text('Show graphs');
-		}else{
-			$(this).text('Show data');
-		}
+	// $('button.show-data').click(function(event){
+	// 	var label = $(this).text();
+	// 	if(label == 'Show data'){
+	// 		$(this).text('Show graphs');
+	// 	}else{
+	// 		$(this).text('Show data');
+	// 	}
+	// 	drawCharts();
+	// 	event.preventDefault();
+	// });
+
+	$('button.graph-type').click(function(event){
+		var status = $(this).attr('status');
+
+		$('button.graph-type').attr('status','');
+		$('button.graph-type').removeClass('btn-success');
+		$(this).attr('status','show');
+		$(this).addClass('btn-success');
+
 		drawCharts();
-		event.preventDefault();
 	});
 
 	$('#show-english').change(function(){

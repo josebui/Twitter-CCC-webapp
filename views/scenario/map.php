@@ -105,7 +105,14 @@
   </div>
 </div>
 <div class="panel panel-default">
-  <div class="panel-heading"><button type="button" class="btn-xs btn btn-default show-data pull-right">Show data</button>Charts</div>
+  <div class="panel-heading">
+    <div class="btn-group pull-right">
+      <button type="button" id="pie-chart" class="btn-xs btn btn-default graph-type" status="">Pie charts</button>
+      <button type="button" id="column-chart" class="btn-xs btn btn-default graph-type btn-success" status="show" >Column charts</button>
+      <button type="button" id="data-table" class="btn-xs btn btn-default graph-type" status="">Show data</button>
+    </div>
+    Charts
+  </div>
   <div class="charts-tabs">
   <!-- Nav tabs -->
       <ul class="nav nav-tabs">
