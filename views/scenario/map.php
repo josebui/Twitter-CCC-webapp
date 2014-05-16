@@ -12,7 +12,7 @@
 <div class="panel panel-default">
   <div class="panel-heading">Filters</div>
   <div class="panel-body">
-    <span class="label label-default">Data:</span>
+    <h4><span class="label label-default">Data:</span></h4>
     <div class="btn-group type">
       <?php if($city == 'melbourne'){ ?>
         <button type="button" class="btn btn-default dropdown-toggle footy" data-toggle="dropdown">Footy<span class="caret"></span></button>
@@ -49,7 +49,7 @@
     </div>
     <span class="label label-info loader" style="display:none;">Loading...</span>
     <br/><br/>
-    <span class="label label-default">By time:</span>
+    <h4><span class="label label-default">By time:</span></h4>
     <div class="btn-group">
       <button type="button" class="hour none btn btn-default" value="none">None</button>
       <?php
@@ -59,7 +59,7 @@
     </div>
     <br/>
     <br/>
-    <span class="label label-default">By day:</span>
+    <h4><span class="label label-default">By day:</span></h4>
     <div class="btn-group">
       <button type="button" class="day none btn btn-default" value="none">None</button>
       <?php
@@ -68,12 +68,12 @@
       <button type="button" class="day btn btn-default" value="<?php echo $value; ?>"><?php echo $value; ?></button>
       <?php }  ?>
     </div><br/><br/>
-    <span class="label label-default">By lang:</span>
+    <h4><span class="label label-default">By lang:</span></h4>
     <div class="btn-group lang-list">
       <button type="button" class="lang none btn btn-default" value="none">None</button>
     </div><br/><br/>
 
-    <span class="label label-default">By mood:</span>
+    <h4><span class="label label-default">By mood:</span></h4>
     <div class="btn-group">
       <button type="button" class="mood none btn btn-default" value="none">None</button>
       <button type="button" class="mood btn btn-default" value="-100|-50">Sad [-100,-50]</button>
