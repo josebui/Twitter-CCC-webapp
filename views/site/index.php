@@ -8,7 +8,7 @@ $this->title = 'Twitter-CCC';
 
     <div class="jumbotron">
         <h1>Global City Twittering</h1>
-        <h2><span class="label label-default">Cluster and Cloud Computing - Assignment 2</span></h2>
+        <h3><span class="label label-default">Cluster and Cloud Computing - Assignment 2</span></h3>
     </div>
 
     <div class="body-content">
@@ -25,7 +25,7 @@ $this->title = 'Twitter-CCC';
             <div class="col-lg-6">
                 <h2>Philadelphia</h2>
                 <div>
-                    <a href="/web/index.php/scenario/map?city=melbourne">
+                    <a href="/web/index.php/scenario/map?city=philadelphia">
                         <img src="/web/img/philadelphia.jpg" width="100%">
                     </a>
                 </div>
